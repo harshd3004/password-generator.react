@@ -2,10 +2,15 @@ import { useCallback, useEffect, useState } from 'react'
 function App() {
   const [password, setPassword] = useState('')
   const [length, setLength] = useState(8)
+  const [numAllowed, setNumAllowed] = useState(false)
+  const [charsAllowed, setCharsAllowed] = useState(false)
 
   const generatePassword = useCallback(() => {
     let pass = ''
     let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+    if (numAllowed) str += '0123456789'
+    if (charsAllowed) str += '!@#$%^&*()_+~`|'
 
     for(let i=0;i<length;i++){
       let ch = Math.floor(Math.random() * str.length + 1)
@@ -13,14 +18,14 @@ function App() {
     }
 
     setPassword(pass)
-  },[length, setPassword])
+  },[length, numAllowed, charsAllowed, setPassword])
 
   useEffect(() => {
     generatePassword()
-  }, [length, generatePassword])
+  }, [length, numAllowed, charsAllowed])
 
   return (
-    <div className='w-full max-w-md p-5 bg-gray-700 mx-auto my-12 rounded-lg text-cyan-500'>
+    <div className='w-full max-w-lg p-5 bg-gray-700 mx-auto my-12 rounded-lg text-cyan-500'>
       <h1 className='text-xl text-white font-bold text-center mb-3'>Password Generator</h1>
       <div className='flex shadow rounded-lg overflow-hidden mb-4 bg-gray-800'>
         <input
@@ -33,7 +38,7 @@ function App() {
           className='outline-none bg-green-500 text-white px-3 py-0.5 shrink-0 hover:bg-green-600 hover:cursor-pointer'
         >Copy</button>
       </div>
-      <div className='flex text-sm gap-x-2'>
+      <div className='flex text-sm gap-x-3.5'>
         <div className='flex items-center gap-x-1'>
           <input 
           type="range"
@@ -44,6 +49,24 @@ function App() {
           onChange={(e) => setLength(e.target.value)}
           />
           <label>Length: {length}</label>
+        </div>
+        <div className='flex items-center gap-x-1'>
+          <input 
+            id='numberInput'
+            type="checkbox"
+            checked={numAllowed}
+            onChange={() => setNumAllowed(prev => !prev)}
+           />
+          <label htmlFor='numberInput'>Numbers</label>
+        </div>
+        <div className='flex items-center gap-x-1'>
+          <input 
+            id='charInput'
+            type="checkbox"
+            checked={charsAllowed}
+            onChange={(e) => setCharsAllowed(e.target.checked)}
+           />
+          <label htmlFor='charInput'>Special Characters</label>
         </div>
       </div>
     </div>
